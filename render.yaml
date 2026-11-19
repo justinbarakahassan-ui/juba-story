@@ -2,17 +2,13 @@ services:
   - type: web
     name: juba-story
     runtime: docker
-    plan: starter
+    plan: free
     autoDeploy: true
     healthCheckPath: /healthz
     envVars:
       - key: JUBA_STORY_DB
-        value: /data/juba_story.db
+        value: /app/juba_story.db
       - key: FOUNDER_PASSWORD_HASH
         sync: false
       - key: MAX_UPLOAD_BYTES
         value: "16777216"
-    disk:
-      name: juba-story-data
-      mountPath: /data
-      sizeGB: 1
