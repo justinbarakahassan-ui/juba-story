@@ -1,0 +1,1170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#07070d">
+<meta name="description" content="Juba Story — the voice of a city, shared by its people.">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="data:,">
+<title>Juba Story — The Voice of a City</title>
+<style>
+  :root{
+    --bg:#07070d; --ink:#f2f4ff; --muted:#8b8fa8;
+    --glass:rgba(255,255,255,.055); --line:rgba(255,255,255,.11);
+    --violet:#8b5cf6; --cyan:#22d3ee;
+    --grad:linear-gradient(135deg,#8b5cf6 0%,#22d3ee 100%);
+    --radius:20px;
+  }
+  *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html,body{ height:100%; }
+  body{
+    margin:0; font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg); color:var(--ink); min-height:100vh; overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  .aurora{ position:fixed; inset:0; overflow:hidden; z-index:-2; pointer-events:none; }
+  .blob{ position:absolute; border-radius:50%; filter:blur(72px); opacity:.5; animation:float 20s ease-in-out infinite; }
+  .b1{ width:62vw; height:62vw; background:#7c3aed; top:-22%; left:-18%; }
+  .b2{ width:56vw; height:56vw; background:#06b6d4; bottom:-26%; right:-18%; animation-delay:-7s; }
+  .b3{ width:46vw; height:46vw; background:#f472b6; top:38%; left:42%; opacity:.32; animation-delay:-13s; }
+  @keyframes float{
+    0%,100%{ transform:translate(0,0) scale(1); }
+    33%{ transform:translate(5%,7%) scale(1.09); }
+    66%{ transform:translate(-6%,-5%) scale(.94); }
+  }
+  body::after{
+    content:''; position:fixed; inset:0; z-index:-1; pointer-events:none;
+    background-image:linear-gradient(rgba(255,255,255,.028) 1px, transparent 1px),
+                     linear-gradient(90deg, rgba(255,255,255,.028) 1px, transparent 1px);
+    background-size:46px 46px;
+    -webkit-mask-image:radial-gradient(circle at 50% 25%,#000 0%,transparent 78%);
+            mask-image:radial-gradient(circle at 50% 25%,#000 0%,transparent 78%);
+  }
+  .hidden{ display:none !important; }
+  .glass{
+    background:var(--glass); border:1px solid var(--line); border-radius:var(--radius);
+    backdrop-filter:blur(22px) saturate(140%); -webkit-backdrop-filter:blur(22px) saturate(140%);
+  }
+  .brand{ display:flex; align-items:center; gap:9px; }
+  .brand h1{
+    margin:0; font-size:23px; font-weight:800; letter-spacing:-.6px;
+    background:var(--grad); -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .brand h1 span{ font-weight:300; opacity:.9; }
+  .brand-dot{
+    width:11px; height:11px; border-radius:50%; background:var(--grad);
+    box-shadow:0 0 14px rgba(139,92,246,.9), 0 0 28px rgba(34,211,238,.55);
+    animation:pulse-dot 2.4s ease-in-out infinite;
+  }
+  @keyframes pulse-dot{
+    0%,100%{ transform:scale(1); opacity:1; } 50%{ transform:scale(.72); opacity:.65; }
+  }
+  .brand.small h1{ font-size:19px; }
+  .av{
+    position:relative; border-radius:50%; overflow:hidden; flex:0 0 auto;
+    background:var(--grad); display:flex; align-items:center; justify-content:center;
+    font-weight:800; color:#0b0b14; letter-spacing:.5px;
+  }
+  .av img{ width:100%; height:100%; object-fit:cover; display:none; }
+  .av.has-img img{ display:block; }
+  .av.has-img span{ display:none; }
+  .chips{ display:flex; flex-wrap:wrap; gap:8px; }
+  .chip{
+    font-family:inherit; font-size:12.5px; font-weight:600;
+    padding:7px 14px; border-radius:999px; cursor:pointer;
+    background:rgba(255,255,255,.05); border:1px solid var(--line);
+    color:#c9cbe0; transition:all .18s ease;
+  }
+  .chip:active{ transform:scale(.95); }
+  .chip.active{
+    background:var(--grad); border-color:transparent; color:#07070d;
+    box-shadow:0 6px 20px rgba(139,92,246,.4);
+  }
+  .primary-btn{
+    width:100%; padding:15px; border:none; border-radius:15px;
+    font-family:inherit; font-size:15px; font-weight:800; letter-spacing:.2px;
+    color:#07070d; background:var(--grad); cursor:pointer;
+    box-shadow:0 10px 32px rgba(139,92,246,.42); transition:transform .12s, opacity .2s;
+  }
+  .primary-btn:active{ transform:scale(.98); }
+  .primary-btn:disabled{ opacity:.35; cursor:not-allowed; box-shadow:none; }
+  .ghost-btn{
+    background:rgba(255,255,255,.06); border:1px solid var(--line);
+    color:#d6d8ea; border-radius:13px; padding:11px 18px;
+    font-family:inherit; font-size:13.5px; font-weight:700; cursor:pointer;
+  }
+  .toast{
+    position:fixed; top:calc(14px + env(safe-area-inset-top)); left:50%;
+    transform:translate(-50%,-20px); opacity:0; pointer-events:none;
+    padding:10px 20px; border-radius:999px; font-size:13px; font-weight:600;
+    background:rgba(16,16,26,.92); border:1px solid var(--line);
+    backdrop-filter:blur(16px); z-index:200; white-space:nowrap;
+    transition:opacity .25s, transform .25s; box-shadow:0 12px 40px rgba(0,0,0,.6);
+  }
+  .toast.show{ opacity:1; transform:translate(-50%,0); }
+  .rec-pill{
+    position:fixed; top:calc(14px + env(safe-area-inset-top)); left:50%;
+    transform:translate(-50%,-24px); opacity:0; pointer-events:none;
+    display:flex; align-items:center; gap:9px;
+    padding:9px 18px; border-radius:999px; font-size:13px; font-weight:700;
+    background:rgba(120,10,25,.85); border:1px solid rgba(255,90,90,.45);
+    backdrop-filter:blur(16px); z-index:200; transition:opacity .25s, transform .25s;
+    box-shadow:0 0 34px rgba(255,50,70,.45);
+  }
+  .rec-pill.show{ opacity:1; transform:translate(-50%,0); }
+  .rec-pill .dot{ width:9px; height:9px; border-radius:50%; background:#ff4d5e; animation:blink 1s infinite; }
+  @keyframes blink{ 0%,100%{opacity:1} 50%{opacity:.2} }
+  .auth{ min-height:100vh; display:flex; align-items:center; justify-content:center;
+    padding:24px 16px calc(24px + env(safe-area-inset-bottom)); }
+  .landing{ min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px 16px; }
+  .landing-card{ width:100%; max-width:620px; padding:42px 28px; text-align:center; animation:rise .55s cubic-bezier(.2,.8,.3,1) both; }
+  .landing-card h2{ margin:28px 0 10px; font-size:clamp(32px,7vw,58px); letter-spacing:-2px; }
+  .landing-card h2 span{ background:var(--grad); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .landing-card p{ max-width:470px; margin:0 auto 28px; color:var(--muted); line-height:1.65; font-size:15px; }
+  .landing-actions{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
+  .landing-actions button{ width:auto; min-width:150px; }
+  .landing-note{ margin-top:20px !important; font-size:11px !important; color:#626680 !important; }
+  .auth-card{ width:100%; max-width:430px; padding:26px 22px 24px;
+    animation:rise .55s cubic-bezier(.2,.8,.3,1) both; }
+  @keyframes rise{ from{opacity:0;transform:translateY(26px) scale(.97)} to{opacity:1;transform:translateY(0) scale(1)} }
+  .auth-tag{ margin:12px 0 22px; font-size:13.5px; line-height:1.6; color:var(--muted); }
+  .auth-tag b{ color:#c9cbe0; font-weight:600; }
+  .avatar-pick{ display:flex; flex-direction:column; align-items:center; margin-bottom:22px; }
+  .avatar-btn{
+    position:relative; width:96px; height:96px; border-radius:50%;
+    border:2px dashed rgba(255,255,255,.22); background:rgba(255,255,255,.045);
+    cursor:pointer; display:flex; align-items:center; justify-content:center;
+    overflow:hidden; transition:border-color .2s, transform .15s; padding:0;
+  }
+  .avatar-btn:active{ transform:scale(.96); }
+  .avatar-btn:hover{ border-color:rgba(139,92,246,.7); }
+  .avatar-btn img{ width:100%; height:100%; object-fit:cover; }
+  .avatar-plus{ font-size:30px; color:#7d81a0; font-weight:300; line-height:1; }
+  .avatar-hint{ font-size:11.5px; color:var(--muted); margin-top:9px; }
+  .field{ display:block; margin-bottom:16px; }
+  .field > span{
+    display:block; font-size:11px; font-weight:700; letter-spacing:1.1px;
+    text-transform:uppercase; color:#7e83a3; margin-bottom:7px;
+  }
+  .field input, .field textarea{
+    width:100%; background:rgba(255,255,255,.045); border:1px solid var(--line);
+    border-radius:13px; color:var(--ink); font-family:inherit; font-size:14.5px;
+    padding:13px 15px; outline:none; resize:none; transition:border-color .18s, background .18s;
+  }
+  .field input:focus, .field textarea:focus{
+    border-color:rgba(139,92,246,.75); background:rgba(139,92,246,.08);
+    box-shadow:0 0 0 3px rgba(139,92,246,.12);
+  }
+  .handle-input{
+    display:flex; align-items:center; gap:2px;
+    background:rgba(255,255,255,.045); border:1px solid var(--line);
+    border-radius:13px; padding-left:15px;
+    transition:border-color .18s, background .18s, box-shadow .18s;
+  }
+  .handle-input:focus-within{
+    border-color:rgba(139,92,246,.75); background:rgba(139,92,246,.08);
+    box-shadow:0 0 0 3px rgba(139,92,246,.12);
+  }
+  .handle-input em{ color:var(--violet); font-style:normal; font-weight:800; }
+  .handle-input input{
+    border:none; background:transparent; padding-left:4px; box-shadow:none !important;
+  }
+  .auth-note{ text-align:center; font-size:11.5px; color:#5d6180; margin:14px 0 0; line-height:1.5; }
+  .app{ padding-bottom:calc(112px + env(safe-area-inset-bottom)); }
+  .app-header{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:calc(14px + env(safe-area-inset-top)) 16px 12px;
+    position:sticky; top:0; z-index:30;
+    background:linear-gradient(to bottom, rgba(7,7,13,.92) 55%, rgba(7,7,13,0));
+    backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px);
+  }
+  .me-chip{
+    display:flex; align-items:center; gap:8px;
+    background:rgba(255,255,255,.06); border:1px solid var(--line);
+    padding:5px 13px 5px 5px; border-radius:999px; cursor:pointer;
+    color:var(--ink); font-family:inherit; font-size:12.5px; font-weight:700;
+    max-width:170px; transition:background .18s;
+  }
+  .me-chip:hover{ background:rgba(255,255,255,.1); }
+  .me-chip .av{ width:28px; height:28px; font-size:11px; }
+  .me-chip span.name{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .view{ padding:0 14px; animation:fadein .3s ease; }
+  @keyframes fadein{ from{opacity:0} to{opacity:1} }
+  .filter-row{ display:flex; gap:8px; overflow-x:auto; padding:4px 2px 14px; scrollbar-width:none; }
+  .user-search{ display:flex; gap:8px; margin:2px 0 12px; }
+  .user-search input{ flex:1; min-width:0; padding:12px 14px; border-radius:13px; border:1px solid var(--line); background:rgba(255,255,255,.05); color:var(--ink); font:inherit; outline:none; }
+  .user-search input:focus{ border-color:rgba(139,92,246,.7); }
+  .user-results{ display:flex; flex-direction:column; gap:7px; margin:-4px 0 12px; }
+  .user-result{ display:flex; align-items:center; gap:10px; padding:9px 11px; border:1px solid var(--line); border-radius:13px; background:rgba(255,255,255,.04); }
+  .user-result .av{ width:32px; height:32px; font-size:11px; }
+  .user-result small{ display:block; color:var(--muted); margin-top:2px; }
+  .filter-row::-webkit-scrollbar{ display:none; }
+  .filter-row .chip{ flex:0 0 auto; }
+  .story{
+    padding:15px; margin-bottom:13px; border-radius:var(--radius);
+    background:var(--glass); border:1px solid var(--line);
+    backdrop-filter:blur(22px) saturate(140%); -webkit-backdrop-filter:blur(22px) saturate(140%);
+    animation:rise .4s cubic-bezier(.2,.8,.3,1) both;
+  }
+  .compact-feed .story{ padding:10px; margin-bottom:8px; }
+  .story-top{ display:flex; align-items:center; gap:11px; }
+  .story-top .av{ width:42px; height:42px; font-size:14px; box-shadow:0 0 0 2px rgba(255,255,255,.06); }
+  .story-who{ min-width:0; flex:1; }
+  .story-who b{ display:block; font-size:14px; font-weight:750; cursor:pointer;
+    overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .story-who small{ font-size:11.5px; color:var(--muted); }
+  .story-title{ margin:12px 0 0; font-size:15px; font-weight:700; line-height:1.4; }
+  .story-tag{
+    display:inline-block; margin-top:7px; font-size:11.5px; font-weight:800;
+    letter-spacing:.4px; padding:4px 11px; border-radius:999px;
+    background:rgba(139,92,246,.16); color:#b39bff; border:1px solid rgba(139,92,246,.3);
+  }
+  audio{
+    width:100%; margin-top:12px; height:38px;
+    filter:invert(.92) hue-rotate(180deg) saturate(.8) brightness(.95);
+    border-radius:999px;
+  }
+  .controls{ display:flex; align-items:center; gap:9px; margin-top:13px; }
+  .spacer{ flex:1; }
+  .act{
+    display:inline-flex; align-items:center; gap:6px;
+    background:rgba(255,255,255,.055); border:1px solid var(--line);
+    color:#d3d5e8; border-radius:999px; padding:7px 14px;
+    font-family:inherit; font-size:12.5px; font-weight:700; cursor:pointer;
+    transition:all .18s ease;
+  }
+  .act:active{ transform:scale(.95); }
+  .act.liked{ background:rgba(244,63,94,.14); border-color:rgba(244,63,94,.42); color:#ff8fa3; }
+  .act .ico{ font-size:13.5px; line-height:1; }
+  .act.liked .ico{ animation:pop .32s ease; }
+  @keyframes pop{ 0%{transform:scale(.6)} 55%{transform:scale(1.35)} 100%{transform:scale(1)} }
+  .del{ background:none; border:none; color:#565a78; font-size:15px; cursor:pointer;
+    padding:7px; line-height:1; transition:color .18s; }
+  .del:hover{ color:#ff5d73; }
+  .comments{ margin-top:14px; padding-top:14px; border-top:1px solid var(--line); }
+  .comment-list{ display:flex; flex-direction:column; gap:11px; max-height:230px; overflow-y:auto; }
+  .comment{ display:flex; gap:9px; align-items:flex-start; font-size:13px; line-height:1.45;
+    animation:fadein .25s ease; }
+  .comment .av{ width:26px; height:26px; font-size:10px; }
+  .comment-body{ flex:1; min-width:0; }
+  .comment .who{ color:#b39bff; font-weight:800; font-size:12.5px; }
+  .comment .txt{ color:#d8daee; word-break:break-word; }
+  .comment .when{ color:#565a78; font-size:10.5px; margin-left:5px; }
+  .no-comments{ font-size:12.5px; color:var(--muted); }
+  .comment-form{ display:flex; gap:8px; margin-top:13px; }
+  .comment-form input{
+    flex:1; min-width:0; background:rgba(255,255,255,.05); border:1px solid var(--line);
+    color:var(--ink); border-radius:999px; padding:11px 17px;
+    font-family:inherit; font-size:13px; outline:none;
+  }
+  .comment-form input:focus{ border-color:rgba(139,92,246,.7); background:rgba(139,92,246,.08); }
+  .comment-form button{
+    background:var(--grad); color:#07070d; border:none; border-radius:999px;
+    padding:0 20px; font-weight:800; font-size:13px; font-family:inherit; cursor:pointer;
+  }
+  .empty-state{ text-align:center; padding:60px 26px; color:#7e83a3; font-size:13.5px; line-height:1.65; }
+  .empty-state .emoji{ display:block; font-size:40px; margin-bottom:14px; opacity:.55; }
+  .profile-hero{ padding:26px 20px 22px; margin-bottom:18px; text-align:center; position:relative; overflow:hidden; }
+  .profile-hero::before{ content:''; position:absolute; inset:0;
+    background:radial-gradient(circle at 50% 0%, rgba(139,92,246,.28), transparent 68%); pointer-events:none; }
+  .prof-av{ width:92px; height:92px; border-radius:50%; margin:0 auto; position:relative;
+    box-shadow:0 0 0 3px rgba(255,255,255,.09), 0 14px 40px rgba(139,92,246,.42); }
+  .prof-name{ margin-top:15px; font-size:21px; font-weight:800; letter-spacing:-.5px; position:relative; }
+  .prof-handle{ font-size:13px; color:var(--violet); font-weight:700; margin-top:3px; position:relative; }
+  .prof-bio{ margin:13px 0 0; font-size:13.5px; line-height:1.6; color:#b6b9d0;
+    position:relative; max-width:340px; margin-inline:auto; }
+  .profile-hero .chips{ justify-content:center; margin-top:16px; position:relative; }
+  .profile-hero .chip{ font-size:11.5px; padding:5px 12px; cursor:default; }
+  .stats{ display:flex; justify-content:center; gap:10px; margin-top:20px; position:relative; }
+  .stats > div{ flex:1; max-width:100px; padding:11px 6px; border-radius:15px;
+    background:rgba(255,255,255,.05); border:1px solid var(--line); }
+  .stats b{ display:block; font-size:18px; font-weight:800; letter-spacing:-.5px; }
+  .stats span{ font-size:10.5px; color:var(--muted); text-transform:uppercase; letter-spacing:.8px; }
+  .profile-hero .ghost-btn{ margin-top:18px; position:relative; }
+  .section-title{ font-size:12px; font-weight:800; letter-spacing:1.3px;
+    text-transform:uppercase; color:#7e83a3; margin:6px 4px 13px; }
+  .record-btn{
+    position:relative; width:78px; height:78px; border-radius:50%; border:none;
+    background:linear-gradient(145deg,#a78bfa 0%,#22d3ee 48%,#8b5cf6 100%); color:#07070d; font-size:27px; line-height:1;
+    cursor:pointer; z-index:40; display:flex; align-items:center; justify-content:center;
+    box-shadow:0 12px 30px rgba(34,211,238,.25), 0 0 0 7px rgba(7,7,13,.9), 0 0 0 9px rgba(139,92,246,.28);
+    transition:transform .18s ease, box-shadow .18s ease;
+  }
+  .record-wrap{ position:fixed; left:50%; transform:translateX(-50%); bottom:calc(21px + env(safe-area-inset-bottom)); z-index:40; display:flex; flex-direction:column; align-items:center; gap:7px; }
+  .record-wrap::before{ content:""; position:absolute; width:126px; height:126px; top:-24px; border-radius:50%; background:radial-gradient(circle,rgba(139,92,246,.24),transparent 67%); pointer-events:none; animation:recordGlow 2.8s ease-in-out infinite; }
+  .record-btn:hover{ transform:scale(1.07); box-shadow:0 16px 38px rgba(34,211,238,.35), 0 0 0 7px rgba(7,7,13,.9), 0 0 0 10px rgba(139,92,246,.4); }
+  .record-btn:active{ transform:scale(.93); }
+  .record-btn .mic{ position:relative; z-index:1; filter:drop-shadow(0 2px 3px rgba(255,255,255,.35)); }
+  .record-label{ position:relative; z-index:1; padding:6px 11px; border:1px solid rgba(255,255,255,.13); border-radius:999px; background:rgba(10,10,19,.78); backdrop-filter:blur(12px); color:#e8e9fa; font-size:10px; font-weight:800; letter-spacing:.45px; white-space:nowrap; box-shadow:0 7px 22px rgba(0,0,0,.25); }
+  @keyframes recordGlow{ 0%,100%{ opacity:.55; transform:scale(.92); } 50%{ opacity:1; transform:scale(1.08); } }
+  .record-btn.recording{
+    background:linear-gradient(135deg,#ff4d5e,#b00020); color:#fff;
+    animation:pulse-ring 1.4s infinite;
+  }
+  .record-btn.recording + .record-label{ color:#ffd5da; border-color:rgba(255,90,90,.42); }
+  @keyframes pulse-ring{
+    0%{ box-shadow:0 0 0 0 rgba(255,70,90,.7), 0 0 0 6px rgba(7,7,13,.85); }
+    70%{ box-shadow:0 0 0 24px rgba(255,70,90,0), 0 0 0 6px rgba(7,7,13,.85); }
+    100%{ box-shadow:0 0 0 0 rgba(255,70,90,0), 0 0 0 6px rgba(7,7,13,.85); }
+  }
+  .bottom-nav{
+    position:fixed; bottom:0; left:0; right:0; z-index:35;
+    height:calc(66px + env(safe-area-inset-bottom)); padding-bottom:env(safe-area-inset-bottom);
+    display:flex; align-items:center;
+    background:rgba(9,9,16,.78); backdrop-filter:blur(24px) saturate(150%);
+    -webkit-backdrop-filter:blur(24px) saturate(150%); border-top:1px solid var(--line);
+  }
+  .nav-btn{
+    flex:1; background:none; border:none; cursor:pointer;
+    display:flex; flex-direction:column; align-items:center; gap:4px;
+    font-family:inherit; font-size:10px; font-weight:700; letter-spacing:.7px;
+    text-transform:uppercase; color:#5d6180; padding:8px 0; transition:color .2s;
+  }
+  .nav-btn .ico{ font-size:19px; line-height:1; filter:grayscale(1) opacity(.6); transition:filter .2s; }
+  .nav-btn.active{ color:#c9cbe0; }
+  .nav-btn.active .ico{ filter:none; }
+  .nav-spacer{ flex:1; max-width:96px; }
+  .sheet-backdrop{
+    position:fixed; inset:0; z-index:150; background:rgba(0,0,0,.68);
+    backdrop-filter:blur(6px); display:flex; align-items:flex-end; justify-content:center;
+    padding:10px; opacity:0; pointer-events:none; transition:opacity .24s;
+  }
+  .sheet-backdrop.show{ opacity:1; pointer-events:auto; }
+  .sheet{
+    width:100%; max-width:500px;
+    background:linear-gradient(180deg, rgba(26,26,40,.97), rgba(14,14,22,.99));
+    border:1px solid var(--line); border-radius:26px;
+    padding:20px 18px calc(20px + env(safe-area-inset-bottom));
+    max-height:90vh; overflow-y:auto;
+    transform:translateY(34px); transition:transform .3s cubic-bezier(.2,.8,.3,1);
+    box-shadow:0 -14px 60px rgba(0,0,0,.7);
+  }
+  .sheet-backdrop.show .sheet{ transform:translateY(0); }
+  .sheet-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+  .sheet-head h3{ margin:0; font-size:17px; font-weight:800; }
+  .pill-time{ font-size:12px; font-weight:800; color:#b39bff;
+    background:rgba(139,92,246,.16); border:1px solid rgba(139,92,246,.32);
+    padding:4px 12px; border-radius:999px; }
+  .sheet-label{ font-size:10.5px; font-weight:800; letter-spacing:1.2px;
+    text-transform:uppercase; color:#7e83a3; margin:18px 0 10px; }
+  .sheet-actions{ display:flex; gap:10px; margin-top:22px; }
+  .sheet-actions button{ flex:1; padding:14px; border-radius:15px; border:none;
+    font-family:inherit; font-size:14px; font-weight:800; cursor:pointer; transition:transform .12s; }
+  .sheet-actions button:active{ transform:scale(.97); }
+  .sheet-actions .ghost{ background:rgba(255,255,255,.06); color:#c3c6dc; border:1px solid var(--line); }
+  .sheet-actions .primary{ background:var(--grad); color:#07070d;
+    box-shadow:0 10px 30px rgba(139,92,246,.4); }
+  .sheet-actions .primary:disabled{ opacity:.4; cursor:not-allowed; box-shadow:none; }
+  .edit-avatar-row{ display:flex; align-items:center; gap:16px; margin-bottom:6px; }
+  .edit-avatar-row .av{ width:70px; height:70px; font-size:20px; }
+  .edit-avatar-row .ghost-btn{ padding:9px 15px; font-size:12.5px; }
+</style>
+</head>
+<body>
+
+<div class="aurora">
+  <span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span>
+</div>
+<div id="toast" class="toast"></div>
+<div id="recPill" class="rec-pill"><span class="dot"></span><span id="recTime">0:00</span></div>
+
+<div id="landingScreen" class="landing">
+  <div class="landing-card glass">
+    <div class="brand" style="justify-content:center"><span class="brand-dot"></span><h1>Juba<span>Story</span></h1></div>
+    <h2>Welcome to <span>the voice of the city</span></h2>
+    <p>Hear the people of Juba. Share the moments, sounds, and stories that make our city alive.</p>
+    <div class="landing-actions">
+      <button id="landingLogin" class="primary-btn" type="button">Log in</button>
+      <button id="landingSignup" class="ghost-btn" type="button">Sign up</button>
+    </div>
+    <p class="landing-note">Your account and stories are stored securely on the Juba Story server.</p>
+  </div>
+</div>
+
+<div id="authScreen" class="auth hidden">
+  <div class="auth-card glass">
+    <div class="brand"><span class="brand-dot"></span><h1>Juba<span>Story</span></h1></div>
+    <p class="auth-tag">
+      The voice of a city. Record a moment from Juba life, tag it,
+      and let the whole city <b>hear</b> you.
+    </p>
+    <div id="loginPanel" class="glass" style="padding:14px;margin-bottom:18px">
+      <div class="sheet-label">Log in to your account</div>
+      <label class="field"><span>Handle</span><input id="loginHandle" type="text" placeholder="your handle" autocomplete="username"></label>
+      <label class="field"><span>Password</span><input id="loginPassword" type="password" autocomplete="current-password"></label>
+      <button id="loginBtn" class="primary-btn" type="button">Log in</button>
+      <p id="loginError" class="auth-note" style="color:#ff8fa3;display:none"></p>
+      <button id="switchSignup" class="ghost-btn" type="button" style="margin-top:10px;width:100%">Create a new account</button>
+    </div>
+    <div id="signupPanel" class="hidden">
+    <div class="sheet-label" style="text-align:center;margin-bottom:14px">Create a new account</div>
+    <div class="avatar-pick">
+      <button id="avatarBtn" class="avatar-btn" type="button" aria-label="Add profile photo">
+        <img id="avatarPreview" alt="" hidden>
+        <span id="avatarPlaceholder" class="avatar-plus">+</span>
+      </button>
+      <input id="avatarInput" type="file" accept="image/*" hidden>
+      <div class="avatar-hint">Tap to add your photo</div>
+    </div>
+    <label class="field"><span>Your name</span>
+      <input id="nameInput" type="text" maxlength="28" placeholder="e.g. Ayen Deng" autocomplete="name"></label>
+    <label class="field"><span>Handle</span>
+      <div class="handle-input"><em>@</em>
+        <input id="handleInput" type="text" maxlength="18" placeholder="ayen" autocomplete="off"></div></label>
+    <label class="field"><span>Your voice - bio</span>
+      <textarea id="bioInput" rows="2" maxlength="120" placeholder="I record the sounds of Konyo Konyo market at dawn..."></textarea></label>
+    <div class="field" style="margin-bottom:22px">
+      <span>What stories do you tell?</span>
+      <div id="authTopics" class="chips"></div>
+    </div>
+    <button id="createBtn" class="primary-btn" type="button" disabled>Create my profile</button>
+    <button id="switchLogin" class="ghost-btn" type="button" style="margin-top:8px;width:100%">Back to log in</button>
+    </div>
+  </div>
+</div>
+
+<div id="app" class="app hidden">
+  <header class="app-header">
+    <div class="brand small"><span class="brand-dot"></span><h1>Juba<span>Story</span></h1></div>
+    <button id="meBtn" class="me-chip" type="button">
+      <span class="av" id="meAvatar"><img alt=""><span>?</span></span>
+      <span class="name" id="meName">You</span>
+    </button>
+  </header>
+  <main>
+    <section id="feedView" class="view">
+      <div class="user-search">
+        <input id="userSearchInput" type="search" placeholder="Search people in Juba..." autocomplete="off">
+      </div>
+      <div id="userResults" class="user-results hidden"></div>
+      <div class="filter-row" id="filterRow"></div>
+      <div id="stories"></div>
+      <div id="empty" class="empty-state"></div>
+    </section>
+    <section id="profileView" class="view hidden">
+      <div class="profile-hero glass">
+        <span class="av prof-av" id="profAvatar"><img alt=""><span>?</span></span>
+        <div class="prof-name" id="profName">-</div>
+        <div class="prof-handle" id="profHandle">@-</div>
+        <p class="prof-bio" id="profBio"></p>
+        <div class="chips" id="profTopics"></div>
+        <div class="stats">
+          <div><b id="statStories">0</b><span>stories</span></div>
+          <div><b id="statLikes">0</b><span>hearts</span></div>
+          <div><b id="statComments">0</b><span>replies</span></div>
+        </div>
+        <button id="editProfileBtn" class="ghost-btn" type="button">Edit profile</button>
+        <button id="settingsBtn" class="ghost-btn" type="button">Settings</button>
+      </div>
+      <h3 class="section-title">My voice stories</h3>
+      <div id="myStories"></div>
+    </section>
+  </main>
+  <div class="record-wrap">
+    <button id="recordBtn" class="record-btn" type="button" aria-label="Record voice story">
+      <span class="mic">&#127908;</span>
+    </button>
+    <span id="recordLabel" class="record-label">Share your voice</span>
+  </div>
+  <nav class="bottom-nav">
+    <button class="nav-btn active" data-view="feed"><span class="ico">&#127760;</span> Feed</button>
+    <span class="nav-spacer"></span>
+    <button class="nav-btn" data-view="profile"><span class="ico">&#128100;</span> Profile</button>
+  </nav>
+</div>
+
+<div class="sheet-backdrop" id="publishSheet">
+  <div class="sheet">
+    <div class="sheet-head"><h3>Publish your voice</h3>
+      <span class="pill-time" id="sheetTime">0:00</span></div>
+    <audio id="previewAudio" controls></audio>
+    <label class="field" style="margin-top:16px; margin-bottom:0">
+      <span>Story title</span>
+      <input id="titleInput" type="text" maxlength="60" placeholder="Give your story a name..."></label>
+    <div class="sheet-label">Tag this moment</div>
+    <div id="publishTags" class="chips"></div>
+    <div class="sheet-actions">
+      <button class="ghost" id="discardBtn" type="button">Discard</button>
+      <button class="primary" id="publishBtn" type="button">Post to feed</button>
+    </div>
+  </div>
+</div>
+
+<div class="sheet-backdrop" id="editSheet">
+  <div class="sheet">
+    <div class="sheet-head"><h3>Edit profile</h3></div>
+    <div class="edit-avatar-row">
+      <span class="av" id="editAvatar"><img alt=""><span>?</span></span>
+      <button class="ghost-btn" id="editAvatarBtn" type="button">Change photo</button>
+      <input id="editAvatarInput" type="file" accept="image/*" hidden>
+    </div>
+    <label class="field" style="margin-top:16px"><span>Name</span>
+      <input id="editName" type="text" maxlength="28"></label>
+    <label class="field"><span>Handle</span>
+      <div class="handle-input"><em>@</em><input id="editHandle" type="text" maxlength="18"></div></label>
+    <label class="field"><span>Bio</span>
+      <textarea id="editBio" rows="2" maxlength="120"></textarea></label>
+    <div class="sheet-label">Stories you tell</div>
+    <div id="editTopics" class="chips"></div>
+    <div class="sheet-actions">
+      <button class="ghost" id="editCancel" type="button">Cancel</button>
+      <button class="primary" id="editSave" type="button">Save changes</button>
+    </div>
+  </div>
+</div>
+
+<div class="sheet-backdrop" id="settingsSheet">
+  <div class="sheet">
+    <div class="sheet-head"><h3>Settings</h3></div>
+    <p class="auth-note" style="text-align:left;margin-top:0">These settings are saved to the server for this account.</p>
+    <label class="field"><span><input id="settingShowSeeds" type="checkbox" checked> Show Justin Baraka stories in the feed</span></label>
+    <label class="field"><span><input id="settingLive" type="checkbox" checked> Receive live feed updates</span></label>
+    <label class="field"><span><input id="settingAutoplay" type="checkbox"> Autoplay audio previews</span></label>
+    <label class="field"><span><input id="settingCompact" type="checkbox"> Use compact feed layout</span></label>
+    <div class="sheet-actions">
+      <button class="ghost" id="settingsCancel" type="button">Cancel</button>
+      <button class="primary" id="settingsSave" type="button">Save settings</button>
+    </div>
+    <button class="ghost-btn" id="logoutBtn" type="button" style="width:100%;margin-top:10px">Log out</button>
+  </div>
+</div>
+
+<script>
+(function () {
+'use strict';
+
+var TOPICS = ['Juba Life','Market','Music','Traffic','Family','News','Sports','Faith','Culture','Youth'];
+
+var DB_NAME = 'jubaStoryDB', DB_VER = 1;
+var db = null;
+
+function openDB () {
+  return new Promise(function (resolve, reject) {
+    var req = indexedDB.open(DB_NAME, DB_VER);
+    req.onupgradeneeded = function (e) {
+      var d = e.target.result;
+      if (!d.objectStoreNames.contains('stories')) d.createObjectStore('stories', { keyPath:'id' });
+      if (!d.objectStoreNames.contains('profile')) d.createObjectStore('profile');
+    };
+    req.onsuccess = function () { resolve(req.result); };
+    req.onerror = function () { reject(req.error); };
+  });
+}
+function store (n, m) { return db.transaction(n, m).objectStore(n); }
+function dbPut (n, v, k) {
+  return new Promise(function (res, rej) {
+    var r = k === undefined ? store(n,'readwrite').put(v) : store(n,'readwrite').put(v,k);
+    r.onsuccess = function () { res(r.result); }; r.onerror = function () { rej(r.error); };
+  });
+}
+function dbGet (n, k) {
+  return new Promise(function (res, rej) {
+    var r = store(n,'readonly').get(k);
+    r.onsuccess = function () { res(r.result); }; r.onerror = function () { rej(r.error); };
+  });
+}
+function dbAll (n) {
+  return new Promise(function (res, rej) {
+    var r = store(n,'readonly').getAll();
+    r.onsuccess = function () { res(r.result || []); }; r.onerror = function () { rej(r.error); };
+  });
+}
+function dbDel (n, k) {
+  return new Promise(function (res, rej) {
+    var r = store(n,'readwrite').delete(k);
+    r.onsuccess = function () { res(); }; r.onerror = function () { rej(r.error); };
+  });
+}
+
+var state = { me: null, stories: [], filter: 'All', view: 'feed', settings: { showSeedStories:true, liveUpdates:true, autoplayAudio:false, compactFeed:false } };
+var deviceId = localStorage.getItem('jubaStoryDeviceId');
+if (!deviceId) { deviceId = (crypto.randomUUID ? crypto.randomUUID() : 'device_' + Date.now() + '_' + Math.random()); localStorage.setItem('jubaStoryDeviceId', deviceId); }
+async function api (url, options) {
+  var response = await fetch(url, options || {});
+  if (!response.ok) throw new Error((await response.text()) || 'Request failed');
+  return response.status === 204 ? null : response.json();
+}
+async function saveProfileServer () {
+  await api('/api/profiles', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(Object.assign({}, state.me, { device_id:deviceId, session_token:localStorage.getItem('jubaStorySessionToken') || '' })) });
+}
+async function refreshStories () {
+  state.stories = await api('/api/stories?device_id=' + encodeURIComponent(deviceId));
+  renderFilters(); renderFeed();
+  if (state.view === 'profile') renderProfile();
+}
+var liveEvents = new EventSource('/api/events');
+liveEvents.onmessage = function () { if (state.settings.liveUpdates) refreshStories().catch(function () { toast('Live update unavailable'); }); };
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(function () {});
+var urlCache = new Map();
+function storyUrl (s) {
+  if (!urlCache.has(s.id)) urlCache.set(s.id, URL.createObjectURL(s.blob));
+  return urlCache.get(s.id);
+}
+function dropUrl (id) {
+  if (urlCache.has(id)) { URL.revokeObjectURL(urlCache.get(id)); urlCache.delete(id); }
+}
+function storyAudioSrc (s) { return s.audio_url || storyUrl(s); }
+
+var $ = function (id) { return document.getElementById(id); };
+var landingScreen = $('landingScreen'), authScreen = $('authScreen'), appEl = $('app');
+var loginPanel = $('loginPanel'), signupPanel = $('signupPanel'), landingLogin = $('landingLogin'), landingSignup = $('landingSignup'), switchSignup = $('switchSignup'), switchLogin = $('switchLogin');
+var avatarBtn = $('avatarBtn'), avatarInput = $('avatarInput'),
+    avatarPreview = $('avatarPreview'), avatarPlaceholder = $('avatarPlaceholder'),
+    nameInput = $('nameInput'), handleInput = $('handleInput'),
+    bioInput = $('bioInput'), authTopics = $('authTopics'),
+    createBtn = $('createBtn');
+var loginHandle = $('loginHandle'), loginPassword = $('loginPassword'), loginBtn = $('loginBtn'), loginError = $('loginError');
+var meBtn = $('meBtn'), meAvatar = $('meAvatar'), meName = $('meName');
+var toastEl = $('toast'), recPill = $('recPill'), recTime = $('recTime');
+var filterRow = $('filterRow'), storiesEl = $('stories'), emptyEl = $('empty');
+var userSearchInput = $('userSearchInput'), userResults = $('userResults');
+var profAvatarEl = $('profAvatar'), profNameEl = $('profName'),
+    profHandleEl = $('profHandle'), profBioEl = $('profBio'),
+    profTopicsEl = $('profTopics'),
+    statStories = $('statStories'), statLikes = $('statLikes'),
+    statComments = $('statComments'), myStoriesEl = $('myStories'),
+    editProfileBtn = $('editProfileBtn');
+var recordBtn = $('recordBtn'), recordLabel = $('recordLabel');
+var publishSheet = $('publishSheet'), previewAudio = $('previewAudio'),
+    sheetTime = $('sheetTime'), titleInput = $('titleInput'),
+    publishTags = $('publishTags'), discardBtn = $('discardBtn'),
+    publishBtn = $('publishBtn');
+var editSheet = $('editSheet'), editAvatar = $('editAvatar'),
+    editAvatarBtn = $('editAvatarBtn'), editAvatarInput = $('editAvatarInput'),
+    editName = $('editName'), editHandle = $('editHandle'),
+    editBio = $('editBio'), editTopics = $('editTopics'),
+    editCancel = $('editCancel'), editSave = $('editSave');
+var settingsBtn = $('settingsBtn'), settingsSheet = $('settingsSheet'), settingsCancel = $('settingsCancel'), settingsSave = $('settingsSave'), logoutBtn = $('logoutBtn');
+var settingShowSeeds = $('settingShowSeeds'), settingLive = $('settingLive'), settingAutoplay = $('settingAutoplay'), settingCompact = $('settingCompact');
+
+function fmt (s) { return Math.floor(s/60) + ':' + String(s%60).padStart(2,'0'); }
+function nowTime () { return new Date().toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' }); }
+function initials (name) {
+  if (!name) return '?';
+  return name.trim().split(/\s+/).slice(0,2).map(function(w){return w[0];}).join('').toUpperCase();
+}
+function paintAvatar (el, src, name) {
+  if (!el) return;
+  var img = el.querySelector('img'), span = el.querySelector('span');
+  if (!src) {
+    img.removeAttribute('src'); el.classList.remove('has-img');
+    if (span) span.textContent = initials(name); return;
+  }
+  img.onload = function () { el.classList.add('has-img'); };
+  img.onerror = function () {
+    img.removeAttribute('src'); el.classList.remove('has-img');
+    if (span) span.textContent = initials(name);
+  };
+  img.src = src;
+}
+var toastTimer = null;
+function toast (msg) {
+  toastEl.textContent = msg; toastEl.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function () { toastEl.classList.remove('show'); }, 2600);
+}
+function fileToAvatar (file, size) {
+  size = size || 280;
+  return new Promise(function (resolve, reject) {
+    var reader = new FileReader();
+    reader.onload = function () {
+      var img = new Image();
+      img.onload = function () {
+        var side = Math.min(img.width, img.height);
+        var c = document.createElement('canvas');
+        c.width = c.height = size;
+        c.getContext('2d').drawImage(img,
+          (img.width-side)/2, (img.height-side)/2, side, side, 0, 0, size, size);
+        resolve(c.toDataURL('image/jpeg', 0.86));
+      };
+      img.onerror = reject; img.src = reader.result;
+    };
+    reader.onerror = reject; reader.readAsDataURL(file);
+  });
+}
+function renderChips (container, selected, onToggle) {
+  container.innerHTML = '';
+  TOPICS.forEach(function (t) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'chip' + (selected.indexOf(t) > -1 ? ' active' : '');
+    b.textContent = t;
+    b.addEventListener('click', function () { onToggle(t, b); });
+    container.appendChild(b);
+  });
+}
+
+var draftAvatar = null, draftTopics = ['Juba Life','Music'];
+function refreshCreateBtn () {
+  createBtn.disabled = !(nameInput.value.trim().length >= 2 &&
+                         handleInput.value.trim().length >= 2 &&
+                         draftTopics.length > 0);
+}
+avatarBtn.addEventListener('click', function () { avatarInput.click(); });
+avatarInput.addEventListener('change', async function (e) {
+  var file = e.target.files && e.target.files[0]; if (!file) return;
+  try {
+    draftAvatar = await fileToAvatar(file);
+    avatarPreview.src = draftAvatar; avatarPreview.hidden = false;
+    avatarPlaceholder.style.display = 'none';
+  } catch (_) { toast('Could not load that image'); }
+});
+nameInput.addEventListener('input', refreshCreateBtn);
+handleInput.addEventListener('input', function () {
+  handleInput.value = handleInput.value.replace(/[^a-zA-Z0-9_.]/g, '');
+  refreshCreateBtn();
+});
+renderChips(authTopics, draftTopics, function (t, btn) {
+  var i = draftTopics.indexOf(t);
+  if (i > -1) draftTopics.splice(i, 1); else draftTopics.push(t);
+  btn.classList.toggle('active'); refreshCreateBtn();
+});
+refreshCreateBtn();
+
+createBtn.addEventListener('click', async function () {
+  var name = nameInput.value.trim(), handle = handleInput.value.trim().toLowerCase();
+  if (name.length < 2 || handle.length < 2) return;
+  state.me = {
+    name: name, handle: handle,
+    bio: bioInput.value.trim() || 'Voice of Juba. Listening, recording, sharing.',
+    topics: draftTopics.slice(), avatar: draftAvatar, joined: Date.now()
+  };
+  await saveProfileServer();
+  localStorage.setItem('jubaStoryLoggedIn', '1');
+  enterApp(); toast('Welcome to Juba Story');
+});
+
+loginBtn.addEventListener('click', async function () {
+  loginBtn.disabled = true; loginError.style.display = 'none';
+  try {
+    state.me = await api('/api/login', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({handle:loginHandle.value, password:loginPassword.value, device_id:deviceId}) });
+    localStorage.setItem('jubaStorySessionToken', state.me.session_token || '');
+    localStorage.setItem('jubaStoryLoggedIn', '1'); enterApp(); toast('Welcome back, ' + state.me.name);
+  } catch (err) {
+    loginError.textContent = 'Login failed. Check your handle and password.'; loginError.style.display = 'block';
+  } finally { loginBtn.disabled = false; }
+});
+
+function enterApp () {
+  landingScreen.classList.add('hidden'); authScreen.classList.add('hidden');
+  appEl.classList.remove('hidden');
+  syncMeEverywhere();
+  loadSettings();
+  renderFilters(); renderFeed(); renderProfile();
+}
+function syncMeEverywhere () {
+  paintAvatar(meAvatar, state.me.avatar, state.me.name);
+  meName.textContent = state.me.name.split(' ')[0];
+  paintAvatar(profAvatarEl, state.me.avatar, state.me.name);
+  profNameEl.textContent = state.me.name;
+  profHandleEl.textContent = '@' + state.me.handle;
+  profBioEl.textContent = state.me.bio;
+  profTopicsEl.innerHTML = '';
+  state.me.topics.forEach(function (t) {
+    var c = document.createElement('span');
+    c.className = 'chip active'; c.textContent = t;
+    profTopicsEl.appendChild(c);
+  });
+}
+
+function showAuth (mode) {
+  landingScreen.classList.add('hidden'); authScreen.classList.remove('hidden');
+  var signup = mode === 'signup';
+  loginPanel.classList.toggle('hidden', signup); signupPanel.classList.toggle('hidden', !signup);
+  if (signup) nameInput.focus(); else loginPassword.focus();
+}
+landingLogin.addEventListener('click', function () { showAuth('login'); });
+landingSignup.addEventListener('click', function () { showAuth('signup'); });
+switchSignup.addEventListener('click', function () { showAuth('signup'); });
+switchLogin.addEventListener('click', function () { showAuth('login'); });
+
+document.querySelectorAll('.nav-btn').forEach(function (b) {
+  b.addEventListener('click', function () { switchView(b.dataset.view); });
+});
+meBtn.addEventListener('click', function () { switchView('profile'); });
+function switchView (v) {
+  state.view = v;
+  document.querySelectorAll('.nav-btn').forEach(function (b) {
+    b.classList.toggle('active', b.dataset.view === v);
+  });
+  $('feedView').classList.toggle('hidden', v !== 'feed');
+  $('profileView').classList.toggle('hidden', v !== 'profile');
+  if (v === 'profile') renderProfile();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+async function loadSettings () {
+  try { state.settings = await api('/api/settings/' + encodeURIComponent(deviceId)); }
+  catch (_) { toast('Settings could not be loaded'); }
+  applySettings();
+}
+function applySettings () {
+  settingShowSeeds.checked = state.settings.showSeedStories;
+  settingLive.checked = state.settings.liveUpdates;
+  settingAutoplay.checked = state.settings.autoplayAudio;
+  settingCompact.checked = state.settings.compactFeed;
+  appEl.classList.toggle('compact-feed', state.settings.compactFeed);
+  renderFeed();
+}
+function openSettings () {
+  settingShowSeeds.checked = state.settings.showSeedStories;
+  settingLive.checked = state.settings.liveUpdates;
+  settingAutoplay.checked = state.settings.autoplayAudio;
+  settingCompact.checked = state.settings.compactFeed;
+  settingsSheet.classList.add('show');
+}
+settingsBtn.addEventListener('click', openSettings);
+settingsCancel.addEventListener('click', function () { settingsSheet.classList.remove('show'); });
+settingsSave.addEventListener('click', async function () {
+  settingsSave.disabled = true;
+  try {
+    state.settings = await api('/api/settings', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({
+      device_id:deviceId, showSeedStories:settingShowSeeds.checked, liveUpdates:settingLive.checked,
+      autoplayAudio:settingAutoplay.checked, compactFeed:settingCompact.checked
+    }) });
+    applySettings(); settingsSheet.classList.remove('show'); toast('Settings saved');
+  } catch (_) { toast('Settings could not be saved'); }
+  finally { settingsSave.disabled = false; }
+});
+logoutBtn.addEventListener('click', function () {
+  localStorage.removeItem('jubaStoryLoggedIn');
+  localStorage.removeItem('jubaStorySessionToken');
+  window.location.reload();
+});
+
+function renderFilters () {
+  filterRow.innerHTML = '';
+  ['All'].concat(TOPICS).forEach(function (t) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'chip' + (state.filter === t ? ' active' : '');
+    b.textContent = t;
+    b.addEventListener('click', function () {
+      if (state.filter === t) return;
+      state.filter = t; renderFilters(); renderFeed();
+    });
+    filterRow.appendChild(b);
+  });
+}
+function filteredStories () {
+  var visible = state.settings.showSeedStories ? state.stories : state.stories.filter(function (s) { return !s.is_seed; });
+  return state.filter === 'All' ? visible : visible.filter(function (s) { return s.tag === state.filter; });
+}
+var searchTimer = null, searchRequest = 0;
+async function searchUsers () {
+  var query = userSearchInput.value.trim();
+  var requestNumber = ++searchRequest;
+  clearTimeout(searchTimer);
+  if (!query) { userResults.classList.add('hidden'); userResults.innerHTML = ''; return; }
+  searchTimer = setTimeout(async function () {
+    try {
+      var users = await api('/api/users?query=' + encodeURIComponent(query));
+      if (requestNumber !== searchRequest || query !== userSearchInput.value.trim()) return;
+      userResults.innerHTML = '';
+      if (!users.length) { userResults.textContent = 'No people found.'; userResults.classList.remove('hidden'); return; }
+      users.forEach(function (user) {
+        var row = document.createElement('div'); row.className = 'user-result';
+        var av = document.createElement('span'); av.className = 'av'; av.innerHTML = '<img alt=""><span></span>'; paintAvatar(av, user.avatar, user.name);
+        var text = document.createElement('div'); var name = document.createElement('b'); name.textContent = user.name;
+        var handle = document.createElement('small'); handle.textContent = '@' + user.handle + (user.role === 'founder' ? ' · Founder' : '');
+        text.append(name, handle); row.append(av, text); userResults.appendChild(row);
+      });
+      userResults.classList.remove('hidden');
+    } catch (_) { toast('User search is unavailable'); }
+  }, 220);
+}
+userSearchInput.addEventListener('input', searchUsers);
+function renderFeed () {
+  var list = filteredStories();
+  storiesEl.innerHTML = '';
+  emptyEl.style.display = list.length ? 'none' : 'block';
+  if (!list.length) {
+    emptyEl.innerHTML = state.filter === 'All'
+      ? '<span class="emoji">&#127908;</span>No voice stories yet.<br>Tap the glowing button and record the first sound of Juba.'
+      : '<span class="emoji">&#128269;</span>Nothing tagged <b>' + state.filter + '</b> yet.';
+  }
+  list.forEach(function (s) { storiesEl.appendChild(buildCard(s)); });
+}
+function renderProfile () {
+  syncMeEverywhere();
+  var mine = state.stories.filter(function (s) { return !s.is_seed; });
+  statStories.textContent = mine.length;
+  statLikes.textContent = mine.reduce(function (a, s) { return a + s.likes; }, 0);
+  statComments.textContent = mine.reduce(function (a, s) { return a + s.comments.length; }, 0);
+  myStoriesEl.innerHTML = '';
+  if (!mine.length) {
+    myStoriesEl.innerHTML = '<div class="empty-state"><span class="emoji">+</span>You haven\'t recorded anything yet.<br>Your first story is waiting.</div>';
+  } else {
+    mine.forEach(function (s) { myStoriesEl.appendChild(buildCard(s)); });
+  }
+}
+
+function buildCard (s) {
+  var author = s.author || { name: state.me.name, handle: state.me.handle, avatar_url: state.me.avatar };
+  var card = document.createElement('div'); card.className = 'story';
+
+  var top = document.createElement('div'); top.className = 'story-top';
+  var av = document.createElement('span'); av.className = 'av';
+  av.innerHTML = '<img alt=""><span></span>';
+  paintAvatar(av, author.avatar_url, author.name);
+  var who = document.createElement('div'); who.className = 'story-who';
+  var whoName = document.createElement('b'); whoName.textContent = author.name;
+  var whoSub = document.createElement('small');
+  whoSub.textContent = '@' + author.handle + ' - ' + s.time;
+  who.append(whoName, whoSub);
+  top.append(av, who);
+
+  var title = document.createElement('div'); title.className = 'story-title'; title.textContent = s.title;
+  var tag = document.createElement('span'); tag.className = 'story-tag'; tag.textContent = '#' + s.tag;
+
+  var audio = document.createElement('audio');
+  audio.controls = true; audio.preload = 'metadata'; audio.src = storyAudioSrc(s);
+
+  var controls = document.createElement('div'); controls.className = 'controls';
+  var likeBtn = document.createElement('button'); likeBtn.type = 'button';
+  likeBtn.className = 'act' + (s.liked ? ' liked' : '');
+  function paintLike () {
+    likeBtn.innerHTML = '<span class="ico">' + (s.liked ? '&#10084;' : '&#9825;') +
+                        '</span><span>' + s.likes + '</span>';
+  }
+  paintLike();
+  likeBtn.addEventListener('click', async function () {
+    s.liked = !s.liked; s.likes += s.liked ? 1 : -1;
+    likeBtn.classList.toggle('liked', s.liked); paintLike();
+    await api('/api/stories/' + encodeURIComponent(s.id) + '/like', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({device_id:deviceId}) });
+    await refreshStories();
+    if (state.view === 'profile') renderProfile();
+  });
+
+  var commentBtn = document.createElement('button'); commentBtn.type = 'button'; commentBtn.className = 'act';
+  function paintCount () {
+    commentBtn.innerHTML = '<span class="ico">&#128172;</span><span>' + s.comments.length + '</span>';
+  }
+  paintCount();
+  var spacer = document.createElement('span'); spacer.className = 'spacer';
+  var delBtn = document.createElement('button'); delBtn.type = 'button';
+  delBtn.className = 'del'; delBtn.textContent = '\u00D7';
+  delBtn.setAttribute('aria-label', 'Delete story');
+  if (s.is_seed && !((state.me && state.me.role === 'founder') && s.author && s.author.handle === 'justinbaraka')) delBtn.hidden = true;
+  delBtn.addEventListener('click', async function () {
+    if (!confirm('Delete this voice story?')) return;
+    var i = state.stories.findIndex(function (x) { return x.id === s.id; });
+    if (i > -1) state.stories.splice(i, 1);
+    var sessionToken = localStorage.getItem('jubaStorySessionToken') || '';
+    dropUrl(s.id);
+    await api('/api/stories/' + encodeURIComponent(s.id) + '?device_id=' + encodeURIComponent(deviceId) + '&session_token=' + encodeURIComponent(sessionToken), { method:'DELETE' });
+    renderFeed();
+    if (state.view === 'profile') renderProfile();
+    toast('Story deleted');
+  });
+  controls.append(likeBtn, commentBtn, spacer, delBtn);
+
+  var commentsWrap = document.createElement('div'); commentsWrap.className = 'comments';
+  commentsWrap.hidden = !s.open;
+  var listEl = document.createElement('div'); listEl.className = 'comment-list';
+  var form = document.createElement('form'); form.className = 'comment-form';
+  var input = document.createElement('input'); input.type = 'text';
+  input.placeholder = 'Reply with your voice...'; input.maxLength = 140;
+  input.value = s.draft || '';
+  input.addEventListener('input', function () { s.draft = input.value; });
+  var sendBtn = document.createElement('button'); sendBtn.type = 'submit'; sendBtn.textContent = 'Send';
+  form.append(input, sendBtn);
+
+  function paintComments () {
+    listEl.innerHTML = '';
+    if (!s.comments.length) {
+      var none = document.createElement('div'); none.className = 'no-comments';
+      none.textContent = 'No replies yet - be the first to react.';
+      listEl.appendChild(none); return;
+    }
+    s.comments.forEach(function (c) {
+      var row = document.createElement('div'); row.className = 'comment';
+      var cav = document.createElement('span'); cav.className = 'av';
+      cav.innerHTML = '<img alt=""><span></span>';
+      paintAvatar(cav, c.avatar, c.author);
+      var body = document.createElement('div'); body.className = 'comment-body';
+      var who2 = document.createElement('span'); who2.className = 'who'; who2.textContent = (c.author || 'Juba Story user') + ' ';
+      var when = document.createElement('span'); when.className = 'when'; when.textContent = c.time;
+      var txt = document.createElement('div'); txt.className = 'txt'; txt.textContent = c.text;
+      body.append(who2, when, txt);
+      row.append(cav, body); listEl.appendChild(row);
+    });
+    listEl.scrollTop = listEl.scrollHeight;
+  }
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+    var text = input.value.trim(); if (!text) return;
+    s.comments.push({ text: text, time: nowTime() });
+    s.draft = ''; input.value = '';
+    paintComments(); paintCount();
+    await api('/api/stories/' + encodeURIComponent(s.id) + '/comments', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({device_id:deviceId, text:text}) });
+    await refreshStories();
+    if (state.view === 'profile') renderProfile();
+    input.focus();
+  });
+  commentBtn.addEventListener('click', function () {
+    s.open = !s.open; commentsWrap.hidden = !s.open;
+    if (s.open) setTimeout(function () { input.focus(); }, 60);
+  });
+  paintComments();
+  commentsWrap.append(listEl, form);
+
+  card.append(top, title, tag, audio, controls, commentsWrap);
+  return card;
+}
+
+var recorder = null, stream = null, chunks = [],
+    recording = false, seconds = 0, tick = null;
+
+recordBtn.addEventListener('click', function () {
+  if (recording) stopRecording(); else startRecording();
+});
+async function startRecording () {
+  if (!navigator.mediaDevices || !window.MediaRecorder) { toast('Recording not supported'); return; }
+  try { stream = await navigator.mediaDevices.getUserMedia({ audio: true }); }
+  catch (_) { toast('Microphone blocked - allow access'); return; }
+  chunks = [];
+  recorder = new MediaRecorder(stream);
+  recorder.ondataavailable = function (e) { if (e.data && e.data.size) chunks.push(e.data); };
+  recorder.onstop = function () {
+    var type = recorder.mimeType || 'audio/webm';
+    var blob = new Blob(chunks, { type: type });
+    chunks = [];
+    if (stream) { stream.getTracks().forEach(function (t) { t.stop(); }); stream = null; }
+    if (!blob.size) { toast('Nothing was recorded'); return; }
+    openPublishSheet(blob, seconds);
+  };
+  recorder.start();
+  recording = true; seconds = 0;
+  recordBtn.classList.add('recording');
+  recordBtn.innerHTML = '<span class="mic">&#9632;</span>'; recordLabel.textContent = 'Tap to finish';
+  recTime.textContent = '0:00';
+  recPill.classList.add('show');
+  tick = setInterval(function () { seconds++; recTime.textContent = fmt(seconds); }, 1000);
+}
+function stopRecording () {
+  if (!recorder || recorder.state === 'inactive') return;
+  clearInterval(tick); tick = null;
+  recording = false;
+  recordBtn.classList.remove('recording');
+  recordBtn.innerHTML = '<span class="mic">&#127908;</span>'; recordLabel.textContent = 'Share your voice';
+  recPill.classList.remove('show');
+  recorder.stop();
+}
+
+var pendingBlob = null, pendingSecs = 0, pendingTag = TOPICS[0];
+function openPublishSheet (blob, secs) {
+  pendingBlob = blob; pendingSecs = secs;
+  pendingTag = (state.me.topics && state.me.topics[0]) || TOPICS[0];
+  previewAudio.src = URL.createObjectURL(blob);
+  sheetTime.textContent = fmt(secs);
+  titleInput.value = ''; publishBtn.disabled = false;
+  renderPublishTags(); publishSheet.classList.add('show');
+}
+function renderPublishTags () {
+  publishTags.innerHTML = '';
+  TOPICS.forEach(function (t) {
+    var b = document.createElement('button'); b.type = 'button';
+    b.className = 'chip' + (pendingTag === t ? ' active' : '');
+    b.textContent = t;
+    b.addEventListener('click', function () { pendingTag = t; renderPublishTags(); });
+    publishTags.appendChild(b);
+  });
+}
+publishBtn.addEventListener('click', async function () {
+  if (!pendingBlob) return;
+  var story = {
+    id: 's_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
+    title: titleInput.value.trim() || 'Voice from Juba',
+    tag: pendingTag, duration: fmt(pendingSecs), time: nowTime(),
+    createdAt: Date.now(), blob: pendingBlob,
+    likes: 0, liked: false, comments: [], open: false, draft: ''
+  };
+  state.stories.unshift(story);
+  var formData = new FormData();
+  formData.append('device_id', deviceId);
+  formData.append('metadata', JSON.stringify({title:story.title, tag:story.tag, duration:story.duration}));
+  formData.append('audio', pendingBlob, story.id + '.webm');
+  try { await api('/api/stories', { method:'POST', body:formData }); }
+  catch (err) { toast('Could not publish story'); return; }
+  pendingBlob = null; closePublishSheet();
+  state.filter = 'All'; renderFilters(); renderFeed();
+  if (state.view === 'profile') renderProfile();
+  switchView('feed'); toast('Posted to the wall');
+});
+discardBtn.addEventListener('click', function () {
+  pendingBlob = null; closePublishSheet(); toast('Recording discarded');
+});
+function closePublishSheet () {
+  publishSheet.classList.remove('show');
+  previewAudio.pause();
+  if (previewAudio.src) URL.revokeObjectURL(previewAudio.src);
+  previewAudio.removeAttribute('src'); previewAudio.load();
+}
+
+var editDraft = null;
+editProfileBtn.addEventListener('click', function () {
+  editDraft = {
+    name: state.me.name, handle: state.me.handle, bio: state.me.bio,
+    topics: state.me.topics.slice(), avatar: state.me.avatar
+  };
+  editName.value = editDraft.name; editHandle.value = editDraft.handle;
+  editBio.value = editDraft.bio;
+  paintAvatar(editAvatar, editDraft.avatar, editDraft.name);
+  renderChips(editTopics, editDraft.topics, function (t, btn) {
+    var i = editDraft.topics.indexOf(t);
+    if (i > -1) editDraft.topics.splice(i, 1); else editDraft.topics.push(t);
+    btn.classList.toggle('active');
+  });
+  editSheet.classList.add('show');
+});
+editName.addEventListener('input', function () {
+  if (editDraft) { editDraft.name = editName.value; paintAvatar(editAvatar, editDraft.avatar, editName.value); }
+});
+editHandle.addEventListener('input', function () {
+  editHandle.value = editHandle.value.replace(/[^a-zA-Z0-9_.]/g, '');
+  if (editDraft) editDraft.handle = editHandle.value;
+});
+editBio.addEventListener('input', function () { if (editDraft) editDraft.bio = editBio.value; });
+editAvatarBtn.addEventListener('click', function () { editAvatarInput.click(); });
+editAvatarInput.addEventListener('change', async function (e) {
+  var file = e.target.files && e.target.files[0]; if (!file) return;
+  try { editDraft.avatar = await fileToAvatar(file); paintAvatar(editAvatar, editDraft.avatar, editDraft.name); }
+  catch (_) { toast('Could not load that image'); }
+});
+editCancel.addEventListener('click', function () { editSheet.classList.remove('show'); });
+editSave.addEventListener('click', async function () {
+  if (!editDraft) return;
+  if (editDraft.name.trim().length < 2 || editDraft.handle.trim().length < 2) {
+    toast('Name and handle need 2+ characters'); return;
+  }
+  state.me.name = editDraft.name.trim();
+  state.me.handle = editDraft.handle.trim().toLowerCase();
+  state.me.bio = editDraft.bio.trim() || 'Voice of Juba.';
+  state.me.topics = editDraft.topics.slice();
+  state.me.avatar = editDraft.avatar;
+  await saveProfileServer();
+  editSheet.classList.remove('show');
+  syncMeEverywhere(); renderFeed(); renderProfile();
+  toast('Profile updated');
+});
+
+(async function boot () {
+  try { db = await openDB(); }
+  catch (err) { toast('Storage unavailable'); return; }
+  try {
+    var serverProfile = localStorage.getItem('jubaStoryLoggedIn') ? await api('/api/profiles/' + encodeURIComponent(deviceId)) : null;
+    if (serverProfile) { state.me = serverProfile; enterApp(); }
+    else { landingScreen.classList.remove('hidden'); }
+    await refreshStories();
+  } catch (err) {
+    console.error(err); toast('Could not connect to Juba Story server');
+    landingScreen.classList.remove('hidden');
+  }
+})();
+
+})();
+</script>
+</body>
+</html>
