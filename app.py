@@ -291,6 +291,22 @@ def service_worker():
     return send_from_directory(os.path.dirname(os.path.abspath(__file__)), "sw.js", mimetype="application/javascript")
 
 
+@app.route("/robots.txt")
+def robots():
+    return Response("User-agent: *\nAllow: /\nSitemap: https://juba-story.onrender.com/sitemap.xml\n", mimetype="text/plain")
+
+
+@app.route("/sitemap.xml")
+def sitemap():
+    return Response(
+        '<?xml version="1.0" encoding="UTF-8"?>'
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
+        '<url><loc>https://juba-story.onrender.com/</loc></url>'
+        '</urlset>',
+        mimetype="application/xml",
+    )
+
+
 @app.route("/api/stories")
 def all_stories():
     device_id = request.args.get("device_id", "anonymous")
